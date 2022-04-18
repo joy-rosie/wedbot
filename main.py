@@ -84,7 +84,9 @@ def get_telegram_bot() -> telegram.Bot:
 
 
 def get_pinned_message_text(bot: telegram.Bot) -> Optional[str]:
-    chat = bot.get_chat(CHAT_ID)
+    logging.info(f'Trying to get the pinned messaged from {CHAT_ID=}')
+
+    chat = bot.get_chat(chat_id=CHAT_ID)
     pinned_message = chat.pinned_message
 
     pinned_message_text = None
@@ -125,9 +127,10 @@ def parse_row_to_message_text(row: list[str]) -> str:
     if row[INDEX_NAME_EVENT] == '':
         text = row[INDEX_DETAILS_EVENT]
     else:
+        details = row[INDEX_DETAILS_EVENT].replace('\\n', '\n')
         text = f'''{row[INDEX_NAME_EVENT]} at {row[INDEX_DATETIME_EVENT]}:
 
-{row[INDEX_DETAILS_EVENT]}
+{details}
 '''
 
     logging.info(f'Parsed message text from row: {text=}')
@@ -157,7 +160,7 @@ def try_send(
     if now > datetime_notification:
 
         # Send message through telegram bot
-        logging.info(f'Trying to send a message using environment variable {NAME_TELEGRAM_CHAT_ID}')
+        logging.info(f'Trying to send a message using {CHAT_ID=}')
         message = bot.send_message(chat_id=CHAT_ID, text=text)
 
         # Unpin all previously pinned messages
