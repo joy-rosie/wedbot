@@ -14,7 +14,7 @@ TIMEDELTA_THRESHOLD = datetime.timedelta(minutes=1)
 DATETIME_TEST = datetime.datetime(year=2000, month=1, day=1)
 
 FILENAME = 'plan.csv'
-DELIMITER = ','
+DELIMITER = '|'
 FORMAT_DATETIME = '%Y-%m-%d %H:%M'
 INDEX_DATETIME_NOTIFICATION = 0
 INDEX_DATETIME_EVENT = 1
@@ -24,6 +24,8 @@ TIMEZONE = ZoneInfo('Europe/London')
 
 NAME_TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN'
 NAME_TELEGRAM_CHAT_ID = 'TELEGRAM_CHAT_ID'
+
+CHAT_ID = os.environ[NAME_TELEGRAM_CHAT_ID]
 
 logging.basicConfig(format='%(asctime)s %(message)s')
 
@@ -71,7 +73,7 @@ def get_telegram_bot() -> telegram.Bot:
 
 
 def get_pinned_message_text(bot: telegram.Bot) -> Optional[str]:
-    chat = bot.get_chat()
+    chat = bot.get_chat(CHAT_ID)
     pinned_message = chat.pinned_message
 
     pinned_message_text = None
@@ -113,7 +115,7 @@ def work_on_row(
 
 def parse_row_to_message_text(row: list[str]) -> str:
     if row[INDEX_NAME_EVENT] == '':
-        return 'test'
+        return row[INDEX_DETAILS_EVENT]
     else:
         return f'''{row[INDEX_NAME_EVENT]} at {row[INDEX_DATETIME_EVENT]}:
 
@@ -141,19 +143,18 @@ def try_send(
 
     logging.info(f'Comparing {now=} with {datetime_notification=}')
     # If condition is hit then we send a message with the row contents
-    # if now > datetime_notification:
-    if True:
+    if now > datetime_notification:
 
         # Send message through telegram bot
         logging.info(f'Trying to send a message using environment variable {NAME_TELEGRAM_CHAT_ID}')
-        message = bot.send_message(chat_id=os.environ[NAME_TELEGRAM_CHAT_ID], text=text)
+        message = bot.send_message(chat_id=CHAT_ID, text=text)
 
         # Pin the message
         message_id = message.message_id
         logging.info(f'Pinning message with {message_id=}')
-        bot.pin_chat_message(message.message_id)
+        bot.pin_chat_message(chat_id=CHAT_ID, message_id=message_id)
     else:
-        logging.info('Will not try to send a message as time does not work')
+        logging.info('Will not try to send a message as now is not past the latest notification datetime in the plan')
 
 
 if __name__ == '__main__':
