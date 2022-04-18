@@ -25,7 +25,21 @@ NAME_TELEGRAM_CHAT_ID = 'TELEGRAM_CHAT_ID'
 
 CHAT_ID = os.environ[NAME_TELEGRAM_CHAT_ID]
 
-logging.basicConfig(format='%(asctime)s %(message)s', stream=sys.stdout)
+LOGGING_LEVEL = logging.INFO
+
+
+def setup_logging():
+    root = logging.getLogger()
+    root.setLevel(LOGGING_LEVEL)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(LOGGING_LEVEL)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    root.addHandler(handler)
+
+
+setup_logging()
 
 
 def main() -> NoReturn:
@@ -90,20 +104,18 @@ def work_on_row(
         pinned_message_text: str,
 ) -> bool:
     logging.info(f'{gone_past_pinned_message=}')
+    logging.info(f'{row=}')
 
     text = parse_row_to_message_text(row=row)
-    logging.info(f'Parsed message text from row:\n{text=}')
 
     if gone_past_pinned_message:
-        logging.info("We have gone past the pinned message so trying to send")
+        logging.info('We have gone past the pinned message so trying to send')
         try_send(bot=bot, row=row, now=now, text=text)
     else:
-        logging.info("Not gone past the pinned message so not going to try to send")
+        logging.info('Not gone past the pinned message so not going to try to send')
 
     if text == pinned_message_text:
-        logging.info(
-            'Parsed text from row matches the pinned message so updating gone_past_pinned_message to True'
-        )
+        logging.info('Parsed text from row matches the pinned message so updating gone_past_pinned_message to True')
         gone_past_pinned_message = True
 
     return gone_past_pinned_message
@@ -111,12 +123,16 @@ def work_on_row(
 
 def parse_row_to_message_text(row: list[str]) -> str:
     if row[INDEX_NAME_EVENT] == '':
-        return row[INDEX_DETAILS_EVENT]
+        text = row[INDEX_DETAILS_EVENT]
     else:
-        return f'''{row[INDEX_NAME_EVENT]} at {row[INDEX_DATETIME_EVENT]}:
+        text = f'''{row[INDEX_NAME_EVENT]} at {row[INDEX_DATETIME_EVENT]}:
 
 {row[INDEX_DETAILS_EVENT]}
 '''
+
+    logging.info(f'Parsed message text from row: {text=}')
+
+    return text
 
 
 def get_datetime_notification(row: list[str]) -> datetime.datetime:
