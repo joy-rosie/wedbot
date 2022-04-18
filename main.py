@@ -1,17 +1,15 @@
 import csv
 import datetime
-from zoneinfo import ZoneInfo
-from typing import NoReturn, Optional
-import os
 import logging
+import os
+import sys
+from typing import NoReturn, Optional
+from zoneinfo import ZoneInfo
 
 import telegram
 from dotenv import load_dotenv
 
 _ = load_dotenv()
-
-TIMEDELTA_THRESHOLD = datetime.timedelta(minutes=1)
-DATETIME_TEST = datetime.datetime(year=2000, month=1, day=1)
 
 FILENAME = 'plan.csv'
 DELIMITER = '|'
@@ -27,11 +25,10 @@ NAME_TELEGRAM_CHAT_ID = 'TELEGRAM_CHAT_ID'
 
 CHAT_ID = os.environ[NAME_TELEGRAM_CHAT_ID]
 
-logging.basicConfig(format='%(asctime)s %(message)s')
+logging.basicConfig(format='%(asctime)s %(message)s', stream=sys.stdout)
 
 
 def main() -> NoReturn:
-
     logging.info('Running main')
 
     now = get_now()
@@ -92,7 +89,6 @@ def work_on_row(
         gone_past_pinned_message: bool,
         pinned_message_text: str,
 ) -> bool:
-
     logging.info(f'{gone_past_pinned_message=}')
 
     text = parse_row_to_message_text(row=row)
@@ -137,7 +133,6 @@ def try_send(
         now: datetime.datetime,
         text: str,
 ) -> NoReturn:
-
     # Parse the notification datetime
     datetime_notification = get_datetime_notification(row)
 
