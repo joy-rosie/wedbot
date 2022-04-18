@@ -149,6 +149,9 @@ def try_send(
         logging.info(f'Trying to send a message using environment variable {NAME_TELEGRAM_CHAT_ID}')
         message = bot.send_message(chat_id=CHAT_ID, text=text)
 
+        # Unpin all previously pinned messages
+        bot.unpin_all_chat_messages(chat_id=CHAT_ID)
+
         # Pin the message
         message_id = message.message_id
         logging.info(f'Pinning message with {message_id=}')
