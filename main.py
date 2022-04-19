@@ -32,11 +32,17 @@ def setup_logging():
     root = logging.getLogger()
     root.setLevel(LOGGING_LEVEL)
 
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(LOGGING_LEVEL)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     root.addHandler(handler)
+
+    file_handler = logging.FileHandler('main.log')
+    file_handler.setLevel(LOGGING_LEVEL)
+    file_handler.setFormatter(formatter)
+    root.addHandler(file_handler)
 
 
 setup_logging()
