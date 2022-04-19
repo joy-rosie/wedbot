@@ -5,6 +5,7 @@ import os
 import sys
 from typing import NoReturn, Optional
 from zoneinfo import ZoneInfo
+import pathlib
 
 import telegram
 from dotenv import load_dotenv
@@ -39,10 +40,11 @@ def setup_logging():
     handler.setFormatter(formatter)
     root.addHandler(handler)
 
-    file_handler = logging.FileHandler('main.log')
-    file_handler.setLevel(LOGGING_LEVEL)
-    file_handler.setFormatter(formatter)
-    root.addHandler(file_handler)
+    if sys.platform == "linux" or sys.platform == "linux2":
+        file_handler = logging.FileHandler('/tmp/main.log')
+        file_handler.setLevel(LOGGING_LEVEL)
+        file_handler.setFormatter(formatter)
+        root.addHandler(file_handler)
 
 
 setup_logging()
@@ -58,7 +60,8 @@ def main() -> NoReturn:
     pinned_message_text = get_pinned_message_text(bot=bot)
 
     logging.info(f"Opening file {FILENAME}")
-    with open(FILENAME) as csvfile:
+    path_file = pathlib.Path(__file__).parent.resolve().joinpath(FILENAME)
+    with open(path_file) as csvfile:
         reader = csv.reader(csvfile, delimiter=DELIMITER)
 
         logging.info(f'Headers: {next(reader)}')
