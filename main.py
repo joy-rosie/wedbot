@@ -25,6 +25,7 @@ NAME_TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN'
 NAME_TELEGRAM_CHAT_ID = 'TELEGRAM_CHAT_ID'
 
 CHAT_ID = os.environ[NAME_TELEGRAM_CHAT_ID]
+TIMEOUT = 30
 
 LOGGING_LEVEL = logging.INFO
 
@@ -95,7 +96,7 @@ def get_telegram_bot() -> telegram.Bot:
 def get_pinned_message_text(bot: telegram.Bot) -> Optional[str]:
     logging.info(f'Trying to get the pinned messaged from {CHAT_ID=}')
 
-    chat = bot.get_chat(chat_id=CHAT_ID)
+    chat = bot.get_chat(chat_id=CHAT_ID, timeout=TIMEOUT)
     pinned_message = chat.pinned_message
 
     pinned_message_text = None
