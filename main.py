@@ -158,7 +158,7 @@ def get_datetime_notification(row: list[str]) -> datetime.datetime:
     return (
         datetime.datetime
         .strptime(row[INDEX_DATETIME_NOTIFICATION], FORMAT_DATETIME)
-        .astimezone(tz=TIMEZONE)
+        .replace(tzinfo=TIMEZONE)
     )
 
 
