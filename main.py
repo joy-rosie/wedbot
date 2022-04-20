@@ -139,8 +139,7 @@ def parse_row_to_message_text(row: list[str]) -> str:
         details = row[INDEX_DETAILS_EVENT].replace('\\n', '\n')
         text = f'''{row[INDEX_NAME_EVENT]} at {row[INDEX_DATETIME_EVENT]}:
 
-{details}
-'''
+{details}'''
 
     logging.info(f'Parsed message text from row: {text=}')
 
