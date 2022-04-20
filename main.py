@@ -6,6 +6,7 @@ import sys
 from typing import NoReturn, Optional
 from zoneinfo import ZoneInfo
 import pathlib
+import difflib
 
 import telegram
 from dotenv import load_dotenv
@@ -126,7 +127,7 @@ def work_on_row(
     else:
         logging.info('Not gone past the pinned message so not going to try to send')
 
-    if text == pinned_message_text:
+    if compare_text_equals(pinned=pinned_message_text, parsed=text):
         logging.info('Parsed text from row matches the pinned message so updating gone_past_pinned_message to True')
         gone_past_pinned_message = True
 
@@ -145,6 +146,12 @@ def parse_row_to_message_text(row: list[str]) -> str:
     logging.info(f'Parsed message text from row: {text=}')
 
     return text
+
+
+def compare_text_equals(pinned: str, parsed: str) -> bool:
+    differences = [li for li in difflib.ndiff(pinned, parsed) if li[0] != ' ']
+    logging.info(f'Comparing pinned versus parsed: {differences=}')
+    return pinned == parsed
 
 
 def get_datetime_notification(row: list[str]) -> datetime.datetime:
